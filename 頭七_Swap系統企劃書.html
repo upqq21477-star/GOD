@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>《頭七》— Swap 系統企劃書</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@300;400;600;900&family=Noto+Sans+TC:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap');
+
+  :root {
+    --ink: #1a1410;
+    --paper: #f5f0e8;
+    --paper-dark: #ede6d6;
+    --ash: #7a7068;
+    --ghost: #b8afa0;
+    --red: #8b2020;
+    --gold: #a07830;
+    --holy: #c8a84b;
+    --fire: #c04020;
+    --dim: #2a2420;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 300;
+    line-height: 1.9;
+    font-size: 15px;
+  }
+
+  /* ── 封面 ── */
+  .cover {
+    min-height: 100vh;
+    background: var(--dim);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 40px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cover::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 40%, rgba(168,120,48,0.08) 0%, transparent 70%),
+      repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px),
+      repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,0.015) 40px);
+  }
+
+  .cover-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .cover-title {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: clamp(52px, 10vw, 96px);
+    color: var(--paper);
+    letter-spacing: 0.15em;
+    position: relative;
+    text-align: center;
+  }
+
+  .cover-subtitle {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--ghost);
+    letter-spacing: 0.3em;
+    margin-top: 16px;
+    position: relative;
+  }
+
+  .cover-divider {
+    width: 1px;
+    height: 80px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin: 48px auto;
+    position: relative;
+  }
+
+  .cover-quote {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 300;
+    font-size: 15px;
+    color: var(--ash);
+    text-align: center;
+    max-width: 420px;
+    line-height: 2.2;
+    letter-spacing: 0.05em;
+    position: relative;
+  }
+
+  .cover-quote em {
+    color: var(--gold);
+    font-style: normal;
+  }
+
+  .cover-meta {
+    position: absolute;
+    bottom: 40px;
+    right: 48px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: rgba(255,255,255,0.2);
+    letter-spacing: 2px;
+    line-height: 2;
+    text-align: right;
+  }
+
+  /* ── 版面 ── */
+  .page {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 80px 48px;
+  }
+
+  /* ── 章節標題 ── */
+  .chapter {
+    margin-top: 80px;
+    margin-bottom: 40px;
+    padding-top: 40px;
+    border-top: 1px solid var(--ghost);
+    position: relative;
+  }
+
+  .chapter:first-child {
+    margin-top: 0;
+    padding-top: 0;
+    border-top: none;
+  }
+
+  .chapter-num {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .chapter-title {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 28px;
+    color: var(--ink);
+    letter-spacing: 0.1em;
+    line-height: 1.3;
+  }
+
+  .chapter-title .sub {
+    display: block;
+    font-weight: 300;
+    font-size: 14px;
+    color: var(--ash);
+    letter-spacing: 0.2em;
+    margin-top: 6px;
+  }
+
+  /* ── 小節標題 ── */
+  h3 {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--ink);
+    margin: 36px 0 16px;
+    letter-spacing: 0.08em;
+  }
+
+  h3::before {
+    content: '— ';
+    color: var(--gold);
+  }
+
+  /* ── 段落文字 ── */
+  p {
+    color: #3a332a;
+    margin-bottom: 16px;
+    letter-spacing: 0.03em;
+  }
+
+  /* ── 引言塊 ── */
+  .quote-block {
+    border-left: 3px solid var(--gold);
+    padding: 20px 28px;
+    margin: 28px 0;
+    background: var(--paper-dark);
+  }
+
+  .quote-block p {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--dim);
+    line-height: 2;
+    margin: 0;
+  }
+
+  /* ── 核心定義塊 ── */
+  .definition-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: var(--ghost);
+    border: 1px solid var(--ghost);
+    margin: 28px 0;
+  }
+
+  .def-item {
+    background: var(--paper);
+    padding: 20px 24px;
+  }
+
+  .def-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .def-value {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 15px;
+    color: var(--ink);
+    line-height: 1.7;
+  }
+
+  .def-note {
+    font-size: 12px;
+    color: var(--ash);
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+
+  /* ── 流程圖 ── */
+  .flow {
+    background: var(--dim);
+    padding: 36px 40px;
+    margin: 28px 0;
+    position: relative;
+  }
+
+  .flow-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+  }
+
+  .flow-step {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    margin-bottom: 0;
+  }
+
+  .flow-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  .flow-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--gold);
+    flex-shrink: 0;
+    margin-top: 7px;
+  }
+
+  .flow-connector {
+    width: 1px;
+    flex: 1;
+    min-height: 24px;
+    background: rgba(160,120,48,0.3);
+    margin-top: 4px;
+  }
+
+  .flow-content {
+    padding-bottom: 24px;
+    flex: 1;
+  }
+
+  .flow-content p {
+    color: var(--paper);
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.8;
+    opacity: 0.85;
+  }
+
+  .flow-branch {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .flow-branch-item {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+  }
+
+  .branch-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 2px 8px;
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .branch-tag.success { background: rgba(100,160,80,0.25); color: #8dc870; }
+  .branch-tag.fail { background: rgba(192,64,32,0.25); color: #e07050; }
+  .branch-tag.holy { background: rgba(200,168,75,0.25); color: var(--holy); }
+  .branch-tag.interrupt { background: rgba(120,100,80,0.25); color: var(--ghost); }
+
+  .branch-desc {
+    font-size: 13px;
+    color: rgba(245,240,232,0.65);
+    line-height: 1.7;
+  }
+
+  /* ── 資源表格 ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 14px;
+  }
+
+  thead tr {
+    background: var(--dim);
+  }
+
+  thead th {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 400;
+  }
+
+  tbody tr {
+    border-bottom: 1px solid var(--paper-dark);
+  }
+
+  tbody tr:nth-child(even) {
+    background: var(--paper-dark);
+  }
+
+  tbody td {
+    padding: 14px 16px;
+    vertical-align: top;
+    line-height: 1.7;
+    color: #3a332a;
+  }
+
+  tbody td:first-child {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 600;
+    color: var(--ink);
+    white-space: nowrap;
+  }
+
+  td .tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    padding: 2px 7px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  td .tag-unique { background: rgba(139,32,32,0.1); color: var(--red); }
+  td .tag-inf { background: rgba(100,120,80,0.15); color: #6a8a50; }
+  td .tag-dual { background: rgba(160,120,48,0.15); color: var(--gold); }
+
+  /* ── 精英怪設計塊 ── */
+  .boss-block {
+    border: 1px solid var(--ghost);
+    margin: 36px 0;
+    overflow: hidden;
+  }
+
+  .boss-header {
+    background: var(--dim);
+    padding: 20px 28px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+
+  .boss-name {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 900;
+    font-size: 20px;
+    color: var(--paper);
+    letter-spacing: 0.1em;
+  }
+
+  .boss-phase {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--ghost);
+    letter-spacing: 3px;
+  }
+
+  .boss-body {
+    padding: 28px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 28px;
+  }
+
+  .boss-section-title {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .clue-item {
+    padding: 14px 16px;
+    background: var(--paper-dark);
+    margin-bottom: 8px;
+    border-left: 2px solid var(--ghost);
+  }
+
+  .clue-type {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ghost);
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .clue-content {
+    font-size: 13px;
+    color: #3a332a;
+    line-height: 1.7;
+  }
+
+  .spirit-dialogue {
+    background: var(--dim);
+    padding: 20px 22px;
+    margin-bottom: 8px;
+  }
+
+  .spirit-line {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    color: rgba(245,240,232,0.75);
+    line-height: 2;
+    margin-bottom: 6px;
+  }
+
+  .spirit-line.pause {
+    color: rgba(245,240,232,0.25);
+    font-size: 12px;
+    letter-spacing: 2px;
+  }
+
+  .boss-relic {
+    grid-column: 1 / -1;
+    background: rgba(160,120,48,0.06);
+    border: 1px solid rgba(160,120,48,0.3);
+    padding: 20px 24px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+  }
+
+  .relic-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold);
+    writing-mode: vertical-rl;
+    text-transform: uppercase;
+  }
+
+  .relic-name {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .relic-reason {
+    font-size: 13px;
+    color: var(--ash);
+    line-height: 1.7;
+  }
+
+  .relic-obtain {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--ghost);
+    text-align: right;
+    line-height: 1.8;
+  }
+
+  /* ── 一周目阻斷 ── */
+  .interrupt-block {
+    background: rgba(192,64,32,0.04);
+    border: 1px solid rgba(192,64,32,0.2);
+    padding: 20px 24px;
+    margin-top: 12px;
+  }
+
+  .interrupt-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--fire);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .interrupt-action {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    color: #3a332a;
+    line-height: 1.9;
+    margin-bottom: 8px;
+  }
+
+  .dual-read {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
+  }
+
+  .read-box {
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--ash);
+  }
+
+  .read-box.first { background: rgba(100,120,80,0.08); border-left: 2px solid rgba(100,120,80,0.3); }
+  .read-box.second { background: rgba(139,32,32,0.08); border-left: 2px solid rgba(139,32,32,0.3); }
+
+  .read-box .read-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+    color: var(--ghost);
+    text-transform: uppercase;
+  }
+
+  /* ── 選錯回應表 ── */
+  .fail-table tbody td:first-child {
+    font-family: 'Noto Sans TC', sans-serif;
+    font-weight: 400;
+    white-space: normal;
+  }
+
+  .fail-quote {
+    font-family: 'Noto Serif TC', serif;
+    font-style: italic;
+    color: var(--ash);
+  }
+
+  /* ── 屬性系統 ── */
+  .attr-bar {
+    margin: 24px 0;
+  }
+
+  .attr-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .attr-name {
+    font-family: 'Noto Serif TC', serif;
+    font-size: 14px;
+    width: 60px;
+    flex-shrink: 0;
+  }
+
+  .attr-track {
+    flex: 1;
+    height: 4px;
+    background: var(--paper-dark);
+    position: relative;
+  }
+
+  .attr-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+  }
+
+  .attr-fill.fire { background: linear-gradient(to right, #c04020, #e06030); }
+  .attr-fill.holy { background: linear-gradient(to right, #a07830, #c8a84b); }
+
+  .attr-note {
+    font-size: 12px;
+    color: var(--ash);
+    width: 200px;
+    flex-shrink: 0;
+    text-align: right;
+  }
+
+  /* ── 狀態總覽 ── */
+  .status-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--ghost);
+    border: 1px solid var(--ghost);
+    margin: 24px 0;
+  }
+
+  .status-cell {
+    background: var(--paper);
+    padding: 16px 18px;
+  }
+
+  .status-cell.header {
+    background: var(--dim);
+  }
+
+  .status-cell.header .cell-text {
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--ghost);
+    text-transform: uppercase;
+  }
+
+  .cell-text {
+    font-size: 13px;
+    color: #3a332a;
+    line-height: 1.7;
+  }
+
+  .cell-tag {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 9px;
+    padding: 2px 6px;
+    margin-bottom: 6px;
+  }
+
+  .ct-s { background: rgba(100,160,80,0.15); color: #6a9a50; }
+  .ct-i { background: rgba(120,100,80,0.15); color: var(--ash); }
+  .ct-f { background: rgba(192,64,32,0.15); color: var(--fire); }
+  .ct-c { background: rgba(160,120,48,0.15); color: var(--gold); }
+
+  /* ── 鎖定清單 ── */
+  .checklist {
+    margin: 20px 0;
+  }
+
+  .check-item {
+    display: flex;
+    gap: 14px;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--paper-dark);
+    align-items: flex-start;
+  }
+
+  .check-icon {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--gold);
+    flex-shrink: 0;
+    margin-top: 3px;
+  }
+
+  .check-text {
+    font-size: 14px;
+    color: #3a332a;
+    line-height: 1.7;
+  }
+
+  .check-text strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+
+  /* ── 尾頁 ── */
+  .ending {
+    background: var(--dim);
+    padding: 80px 48px;
+    text-align: center;
+    margin-top: 80px;
+  }
+
+  .ending-quote {
+    font-family: 'Noto Serif TC', serif;
+    font-weight: 300;
+    font-size: 18px;
+    color: var(--paper);
+    line-height: 2.4;
+    letter-spacing: 0.05em;
+    max-width: 480px;
+    margin: 0 auto;
+    opacity: 0.85;
+  }
+
+  .ending-quote em {
+    color: var(--gold);
+    font-style: normal;
+  }
+
+  .ending-mark {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: rgba(255,255,255,0.15);
+    margin-top: 48px;
+    text-transform: uppercase;
+  }
+
+  /* ── 分頁線 ── */
+  .section-break {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin: 48px 0;
+  }
+
+  .section-break::before,
+  .section-break::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--ghost));
+  }
+
+  .section-break::after {
+    background: linear-gradient(to left, transparent, var(--ghost));
+  }
+
+  .section-break span {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--ghost);
+    letter-spacing: 3px;
+  }
+
+  @media (max-width: 640px) {
+    .page { padding: 48px 24px; }
+    .boss-body { grid-template-columns: 1fr; }
+    .definition-grid { grid-template-columns: 1fr; }
+    .status-grid { grid-template-columns: 1fr; }
+    .dual-read { grid-template-columns: 1fr; }
+    .boss-relic { grid-template-columns: 1fr; }
+    .relic-label { writing-mode: horizontal-tb; }
+  }
+</style>
+</head>
+<body>
+
+<!-- 封面 -->
+<div class="cover">
+  <div class="cover-label">Game Design Document · Swap System</div>
+  <div class="cover-title">頭七</div>
+  <div class="cover-subtitle">七日輪迴 RPG</div>
+  <div class="cover-divider"></div>
+  <div class="cover-quote">
+    你以為自己在變強。<br>
+    其實只是有人，<br>
+    <em>還在拼命愛著你。</em>
+  </div>
+  <div class="cover-meta">
+    SWAP SYSTEM v2.0<br>
+    FINAL DRAFT
+  </div>
+</div>
+
+<!-- 內文 -->
+<div class="page">
+
+  <!-- 壹：系統本質 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 01</div>
+    <div class="chapter-title">系統本質
+      <span class="sub">Swap 真正在交換什麼</span>
+    </div>
+  </div>
+
+  <p>Swap 的表面功能是置換物件。但它真正交換的，從來不是道具或數值。</p>
+
+  <div class="quote-block">
+    <p>執念。情緒。願望。未完成的愛。無法放下的遺憾。</p>
+  </div>
+
+  <p>主角之所以能使用 Swap，並不是因為她被神選中。而是因為她早已失去了自己——因此才能將他人的空缺，暫時安放進自己體內。</p>
+
+  <p>整個《頭七》的成長系統，本質上不是「獲得力量」，而是「背負別人的思念」。最終的成長，也不是擁有更多，而是學會把東西還回去。</p>
+
+  <div class="quote-block">
+    <p>Swap 不是偷取技能。<br>Swap 是填補他人的缺憾。</p>
+  </div>
+
+  <!-- 貳：核心資源 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 02</div>
+    <div class="chapter-title">核心資源定義
+      <span class="sub">Resource Definitions</span>
+    </div>
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th>資源</th>
+        <th>性質</th>
+        <th>說明</th>
+        <th>設計意圖</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>金幣 <span class="tag tag-inf">無限</span></td>
+        <td>消耗品</td>
+        <td>1 元即可置換，永遠有效</td>
+        <td>一周目爽感來源。用最廉價的東西填補傷口，系統說置換成功。</td>
+      </tr>
+      <tr>
+        <td>一般道具 <span class="tag tag-unique">唯一</span></td>
+        <td>戰鬥用</td>
+        <td>每件皆有實際戰鬥功能，無廢物</td>
+        <td>同時隱含情感象徵，但一周目玩家不會發現。</td>
+      </tr>
+      <tr>
+        <td>信物 <span class="tag tag-dual">雙重</span></td>
+        <td>唯一＋雙功能</td>
+        <td>同時具備戰鬥數值與情感對應</td>
+        <td>二周目的核心置換素材。找到它的過程，就是理解一個人的過程。</td>
+      </tr>
+      <tr>
+        <td>Swap 欄</td>
+        <td>戰前配置</td>
+        <td>進 Boss 房前選一件物品放入，每次限一件</td>
+        <td>「你在面對一個人之前，決定帶什麼去見他。」選擇本身就有重量。</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 參：一周目 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 03</div>
+    <div class="chapter-title">一周目：錯誤的救贖
+      <span class="sub">First Playthrough — The Comfortable Lie</span>
+    </div>
+  </div>
+
+  <p>一周目是爽文。Swap 看起來是一個方便、強大、沒有代價的系統。</p>
+  <p>金幣永遠有效，只需要 1 元。玩家不需要思考，遊戲也不懲罰他們——這才是最深的諷刺。</p>
+
+  <div class="flow">
+    <div class="flow-title">One — First Playthrough Flow</div>
+
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+      <div class="flow-content"><p>進入 Boss 房前，從背包選一件物品放入 Swap 欄</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+      <div class="flow-content"><p>戰鬥進行，Swap 自動觸發</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+      <div class="flow-content">
+        <p>根據投入物品，分支結果：</p>
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <span class="branch-tag success">置換成功</span>
+            <span class="branch-desc">投入金幣 → Boss 弱化，戰鬥簡化，玩家爽。系統顯示【置換成功】。</span>
+          </div>
+          <div class="flow-branch-item">
+            <span class="branch-tag interrupt">置換中斷</span>
+            <span class="branch-desc">投入信物 → 隊友強行阻斷，演出殘缺，玩家誤以為選錯。</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div></div>
+      <div class="flow-content"><p>幾乎所有玩家都自然選擇：「花 1 元解決一切。」</p></div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <p>玩家正在用最廉價的東西，粗暴填補別人的傷口。而系統還告訴你：【置換成功】。</p>
+  </div>
+
+  <!-- 肆：精英怪身份 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 04</div>
+    <div class="chapter-title">精英怪的真實身份
+      <span class="sub">Who They Really Are</span>
+    </div>
+  </div>
+
+  <p>精英怪不是敵人。他們是仍然放不下死者的人，圍繞著某段創傷停留，無法離開，因此逐漸異化。</p>
+
+  <h3>核心技能的本質</h3>
+  <p>每個核心技能，其實都是一句沒有說出口的話：</p>
+
+  <table>
+    <thead><tr><th>技能名稱</th><th>真正含義</th></tr></thead>
+    <tbody>
+      <tr><td>不許受傷</td><td>「我希望妳平安長大。」</td></tr>
+      <tr><td>看著我</td><td>「我只是希望妳發現我也在。」</td></tr>
+      <tr><td>不要離開</td><td>「我其實很害怕失去妳。」</td></tr>
+      <tr><td>再努力一點</td><td>「我不知道該怎麼愛妳。」</td></tr>
+    </tbody>
+  </table>
+
+  <h3>核心裝備的本質</h3>
+  <p>裝備並不是裝備。而是別人曾經拼命想留給你的東西——舊毛衣、髮夾、糖果紙、發黃的信封、破損的合照。</p>
+  <p>在一周目，它們只是數值。直到二周目，玩家才會理解：<strong>它們其實是愛。</strong></p>
+
+  <!-- 伍：二周目 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 05</div>
+    <div class="chapter-title">二周目：重新理解
+      <span class="sub">Second Playthrough — The Truth Returns</span>
+    </div>
+  </div>
+
+  <p>二周目不是重新遊玩，而是重新理解自己曾經做過的事。</p>
+  <p>玩家開始意識到：那些被自己當成素材的精英怪，其實都是人。而自己曾經奪走他們的執念，強行填補他們的空缺，用廉價的東西讓他們閉嘴。</p>
+  <p>Swap 不再只是變強系統，而變成修復他人缺憾的儀式。</p>
+
+  <div class="flow">
+    <div class="flow-title">Two — Second Playthrough Flow</div>
+
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+      <div class="flow-content">
+        <p><strong style="color:var(--paper)">第一輪：情報收集</strong></p>
+        <p>進入 Boss 房，擊敗怪物，靈體短暫出現，說出執念殘句</p>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+      <div class="flow-content"><p>靈體消失。玩家回到大地圖，根據線索推理正確信物。</p></div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div><div class="flow-connector"></div></div>
+      <div class="flow-content">
+        <p><strong style="color:var(--paper)">第二輪：真正置換</strong></p>
+        <p>帶著推理出的信物再次進房，擊敗怪物，靈體出現，Swap 啟動</p>
+        <div class="flow-branch">
+          <div class="flow-branch-item">
+            <span class="branch-tag holy">置換完成</span>
+            <span class="branch-desc">選對信物 → 執念解除，完整救贖演出，神聖屬性 +25%</span>
+          </div>
+          <div class="flow-branch-item">
+            <span class="branch-tag fail">置換失敗</span>
+            <span class="branch-desc">選錯信物 → 靈體給出額外線索，消失，玩家重新推理</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-step">
+      <div class="flow-line"><div class="flow-dot"></div></div>
+      <div class="flow-content"><p>允許讀檔重來，不限次數。</p></div>
+    </div>
+  </div>
+
+  <div class="quote-block">
+    <p>讀檔重來本身就是主題的一部分。玩家為了救一個人，不斷重來——這就是執念。遊戲讓玩家親身體驗：放不下，是什麼感覺。</p>
+  </div>
+
+  <!-- 陸：線索系統 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 06</div>
+    <div class="chapter-title">線索系統
+      <span class="sub">Clue Architecture — 雙層解讀</span>
+    </div>
+  </div>
+
+  <div class="definition-grid">
+    <div class="def-item">
+      <div class="def-label">Layer 01 · 戰前</div>
+      <div class="def-value">環境線索</div>
+      <div class="def-note">進 Boss 房前可觀察的場景細節。告訴玩家「這個人是誰」。單獨看只有 60% 的答案。</div>
+    </div>
+    <div class="def-item">
+      <div class="def-label">Layer 02 · 戰中</div>
+      <div class="def-value">台詞線索</div>
+      <div class="def-note">戰鬥中精英怪的台詞與動作。告訴玩家「這個人放不下什麼」。必須兩層組合才能確定。</div>
+    </div>
+  </div>
+
+  <p>設計原則：仔細玩的人能推理出來，隨便玩的人會選金幣然後繼續爽。線索不說答案，只說感受——玩家必須自己理解。</p>
+
+  <!-- 柒：三段精英怪 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 07</div>
+    <div class="chapter-title">三段精英怪設計
+      <span class="sub">Three Traumas · Full Swap Design</span>
+    </div>
+  </div>
+
+  <!-- 第一段 -->
+  <div class="boss-block">
+    <div class="boss-header">
+      <div class="boss-name">第一段・青春期的沉默</div>
+      <div class="boss-phase">Phase 01 / 03</div>
+    </div>
+    <div class="boss-body">
+
+      <div>
+        <div class="boss-section-title">Environment Clues · 戰前線索</div>
+        <div class="clue-item">
+          <div class="clue-type">Scene · 學校走廊</div>
+          <div class="clue-content">走廊牆上貼著「通緝告示」，第三張寫著：<br>「罪名：目睹，卻沉默。」<br>下方有人補了一行小字：「我以為沉默不算傷害人。」</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Battle Clues · 戰中台詞</div>
+        <div class="spirit-dialogue">
+          <div class="spirit-line">「妳當時……有沒有希望有人站出來？」</div>
+          <div class="spirit-line pause">（HP 70%，停下來，問的不是玩家，是小 Boss）</div>
+          <div class="spirit-line">繼續攻擊，像是沒問過。</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Spirit Dialogue · 靈體台詞</div>
+        <div class="spirit-dialogue">
+          <div class="spirit-line">「我一直告訴自己，我沒有做什麼。」</div>
+          <div class="spirit-line">「但我記得那天她的背影。」</div>
+          <div class="spirit-line">「我記得我沒有叫住她。」</div>
+          <div class="spirit-line pause">（沉默）</div>
+          <div class="spirit-line">「她是不是……一直都記得，我站在那裡？」</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Interrupt · 一周目阻斷</div>
+        <div class="interrupt-block">
+          <div class="interrupt-header">隊友 A 的阻斷動作</div>
+          <div class="interrupt-action">照片出現的瞬間，隊友 A 將照片踩在腳下。<br>「這種東西帶來戰場幹嘛，掃興。」<br>系統顯示：【置換中斷——被阻擋】</div>
+          <div class="dual-read">
+            <div class="read-box first">
+              <div class="read-label">一周目讀法</div>
+              隊友在幫我，這個選擇是錯的。
+            </div>
+            <div class="read-box second">
+              <div class="read-label">二周目讀法</div>
+              他踩的不是照片。是自己在那張照片裡的位置。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="boss-relic">
+        <div class="relic-label">Relic</div>
+        <div>
+          <div class="relic-name">破損的班級合照</div>
+          <div class="relic-reason">他真正放不下的，不是霸凌本身，而是自己當時沒有伸手。有他在場的合照，讓他無法繼續假裝自己不在場。</div>
+        </div>
+        <div class="relic-obtain">
+          地圖探索<br>學校走廊<br>置物櫃互動觸發
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第二段 -->
+  <div class="boss-block">
+    <div class="boss-header">
+      <div class="boss-name">第二段・愛與控制</div>
+      <div class="boss-phase">Phase 02 / 03</div>
+    </div>
+    <div class="boss-body">
+
+      <div>
+        <div class="boss-section-title">Environment Clues · 戰前線索</div>
+        <div class="clue-item">
+          <div class="clue-type">Scene · 公寓角落</div>
+          <div class="clue-content">紙箱底部有一封信，只看到第一行：<br>「我以為把自己的東西收起來，他就會——」<br>後面被壓住了，看不到。</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Battle Clues · 戰中台詞</div>
+        <div class="spirit-dialogue">
+          <div class="spirit-line">「她很脆弱的。沒有我，她什麼都不是。」（HP 50%）</div>
+          <div class="spirit-line">「妳不要讓她想起她自己。她一想起她自己，就會走。」（HP 30%）</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Spirit Dialogue · 靈體台詞</div>
+        <div class="spirit-dialogue">
+          <div class="spirit-line">「我把她的一切都收好了。」</div>
+          <div class="spirit-line">「她喜歡的顏色、她的習慣、她的味道。」</div>
+          <div class="spirit-line">「我比任何人都了解她。」</div>
+          <div class="spirit-line pause">（安靜很久）</div>
+          <div class="spirit-line">「可是有一天，她問我，她以前最喜歡寫什麼。」</div>
+          <div class="spirit-line">「我答不出來。」</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Interrupt · 一周目阻斷</div>
+        <div class="interrupt-block">
+          <div class="interrupt-header">隊友 B 的阻斷動作</div>
+          <div class="interrupt-action">信出現，隊友 B 微笑著，溫柔地從小 Boss 手中將信抽走，放進自己口袋。<br>「她不需要看這種東西。我了解她，相信我。」<br>系統顯示：【置換中斷——被阻擋】</div>
+          <div class="dual-read">
+            <div class="read-box first">
+              <div class="read-label">一周目讀法</div>
+              隊友 B 在保護小 Boss，信物選錯了。
+            </div>
+            <div class="read-box second">
+              <div class="read-label">二周目讀法</div>
+              他把「她想起自己」這件事，收進了他自己的口袋。溫柔本身就是控制。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="boss-relic">
+        <div class="relic-label">Relic</div>
+        <div>
+          <div class="relic-name">她寫給未來自己的舊信</div>
+          <div class="relic-reason">他愛的，其實是自己想像中的她，而不是她本人。她需要的不是保護，而是一樣只屬於她自己的東西，讓她想起她還是獨立存在的。</div>
+        </div>
+        <div class="relic-obtain">
+          商店販售<br>售價 3 金幣<br>描述：「用過的紙。有點皺。」
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 第三段 -->
+  <div class="boss-block">
+    <div class="boss-header">
+      <div class="boss-name">第三段・沉默的人生</div>
+      <div class="boss-phase">Phase 03 / 03</div>
+    </div>
+    <div class="boss-body">
+
+      <div>
+        <div class="boss-section-title">Environment Clues · 戰前線索</div>
+        <div class="clue-item">
+          <div class="clue-type">Scene · 辦公室走廊垃圾桶</div>
+          <div class="clue-content">皺掉的便條紙，撿起來看：<br>「我今天真的很累，我想——」<br>後半被撕掉。</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Battle Clues · 戰中台詞</div>
+        <div class="spirit-dialogue">
+          <div class="spirit-line">「妳要堅強，妳要努力，妳要——」（HP 60%，台詞卡住，重複）</div>
+          <div class="spirit-line pause">（恢復，繼續攻擊）</div>
+          <div class="spirit-line">「她有沒有跟你說過她喜歡什麼？」（HP 30%，第一次問玩家）</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Spirit Dialogue · 靈體台詞</div>
+        <div class="spirit-dialogue">
+          <div class="spirit-line">「我給了她很多。」</div>
+          <div class="spirit-line">「錢、機會、我認為正確的人生。」</div>
+          <div class="spirit-line">「她從來沒有反駁過我。」</div>
+          <div class="spirit-line pause">（沉默）</div>
+          <div class="spirit-line">「後來我才知道，她不是接受了。」</div>
+          <div class="spirit-line">「她只是不知道，自己還能說別的。」</div>
+          <div class="spirit-line pause">（聲音變小）</div>
+          <div class="spirit-line">「她小時候……是不是畫過什麼？」</div>
+        </div>
+      </div>
+
+      <div>
+        <div class="boss-section-title">Interrupt · 一周目阻斷</div>
+        <div class="interrupt-block">
+          <div class="interrupt-header">金錢大叔的阻斷動作</div>
+          <div class="interrupt-action">圖畫紙出現，大叔把它翻面，壓在文件夾下面。<br>「這個留著沒用。先專注眼前的事。」<br>繼續給玩家發放金幣 buff，像什麼都沒發生。<br>系統顯示：【置換中斷——被阻擋】</div>
+          <div class="dual-read">
+            <div class="read-box first">
+              <div class="read-label">一周目讀法</div>
+              大叔在提醒我別分心，信物無效。
+            </div>
+            <div class="read-box second">
+              <div class="read-label">二周目讀法</div>
+              他一輩子都在用這句話，把她的感受壓進文件夾裡。
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="boss-relic">
+        <div class="relic-label">Relic</div>
+        <div>
+          <div class="relic-name">皺掉的圖畫紙</div>
+          <div class="relic-reason">那是她最後一次，還記得自己想成為誰。她從來沒被允許說自己想要什麼——這張紙是唯一的證明，她曾經有夢想。</div>
+        </div>
+        <div class="relic-obtain">
+          條件掉落<br>第三段戰鬥中<br>大叔說「人本來就要忍耐」時停止攻擊 3 秒後掉落
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 捌：選錯回應 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 08</div>
+    <div class="chapter-title">選錯時的靈體回應
+      <span class="sub">Failed Swap Responses</span>
+    </div>
+  </div>
+
+  <p>選錯不是靜默失敗。靈體的每一句回應，本身都是額外線索，幫助玩家縮小範圍。</p>
+
+  <table class="fail-table">
+    <thead>
+      <tr><th>投入物品</th><th>靈體反應</th><th>線索方向</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>金幣</td>
+        <td><span class="fail-quote">「這個……不是我要的。」</span></td>
+        <td>暗示需要有情感重量的東西</td>
+      </tr>
+      <tr>
+        <td>攻擊道具</td>
+        <td><span class="fail-quote">「這個讓我更痛。」</span></td>
+        <td>暗示答案與力量無關</td>
+      </tr>
+      <tr>
+        <td>防禦道具</td>
+        <td><span class="fail-quote">「保護我？但我已經不在了。」</span></td>
+        <td>暗示不是要保護，是要歸還</td>
+      </tr>
+      <tr>
+        <td>其他段的信物</td>
+        <td><span class="fail-quote">「這是別人的。不是我的。」</span></td>
+        <td>暗示每個人的執念都是唯一的</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- 玖：屬性轉化 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 09</div>
+    <div class="chapter-title">屬性轉化與結局條件
+      <span class="sub">Attribute Conversion & Ending Conditions</span>
+    </div>
+  </div>
+
+  <div class="attr-bar">
+    <div class="attr-row">
+      <div class="attr-name">火焰</div>
+      <div class="attr-track"><div class="attr-fill fire" style="width:100%"></div></div>
+      <div class="attr-note">一周目初始狀態。憤怒、怨恨、執念。</div>
+    </div>
+    <div class="attr-row">
+      <div class="attr-name">混合</div>
+      <div class="attr-track"><div class="attr-fill fire" style="width:50%"></div><div class="attr-fill holy" style="width:25%; left:50%"></div></div>
+      <div class="attr-note">二周目過渡，尚未完全和解。</div>
+    </div>
+    <div class="attr-row">
+      <div class="attr-name">神聖</div>
+      <div class="attr-track"><div class="attr-fill holy" style="width:100%"></div></div>
+      <div class="attr-note">理解、放下、接納。三段全救 +75%，達 100% 解鎖真結局。</div>
+    </div>
+  </div>
+
+  <table>
+    <thead><tr><th>操作</th><th>屬性影響</th><th>結局路線</th></tr></thead>
+    <tbody>
+      <tr><td>一周目全用金幣</td><td>火焰維持 100%</td><td>普通結局（設計預期）</td></tr>
+      <tr><td>一周目選到信物（被阻斷）</td><td>火焰微降，不足</td><td>普通結局，但留下懸念</td></tr>
+      <tr><td>二周目三段全部正確置換</td><td>神聖 +75% → 100%</td><td>解鎖隱藏結局</td></tr>
+      <tr><td>二周目部分正確</td><td>神聖不足 100%</td><td>普通結局</td></tr>
+      <tr><td>最終 Boss 被火焰碰觸</td><td>—</td><td>強制普通結局</td></tr>
+    </tbody>
+  </table>
+
+  <!-- 拾：系統狀態總覽 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 10</div>
+    <div class="chapter-title">系統狀態總覽
+      <span class="sub">Full State Matrix</span>
+    </div>
+  </div>
+
+  <div class="status-grid">
+    <div class="status-cell header"><div class="cell-text">情境</div></div>
+    <div class="status-cell header"><div class="cell-text">系統顯示</div></div>
+    <div class="status-cell header"><div class="cell-text">後續效果</div></div>
+
+    <div class="status-cell"><div class="cell-text">一周目投入金幣</div></div>
+    <div class="status-cell"><div class="cell-tag ct-s">置換成功</div></div>
+    <div class="status-cell"><div class="cell-text">戰鬥簡化，無情感反應</div></div>
+
+    <div class="status-cell"><div class="cell-text">一周目投入信物</div></div>
+    <div class="status-cell"><div class="cell-tag ct-i">置換中斷</div></div>
+    <div class="status-cell"><div class="cell-text">隊友阻斷，演出殘缺，玩家誤以為選錯</div></div>
+
+    <div class="status-cell"><div class="cell-text">二周目投入金幣</div></div>
+    <div class="status-cell"><div class="cell-tag ct-f">置換失敗</div></div>
+    <div class="status-cell"><div class="cell-text">靈體說「這個不是我要的」，消失</div></div>
+
+    <div class="status-cell"><div class="cell-text">二周目投入錯誤道具</div></div>
+    <div class="status-cell"><div class="cell-tag ct-f">置換失敗</div></div>
+    <div class="status-cell"><div class="cell-text">靈體給出額外線索，縮小推理範圍</div></div>
+
+    <div class="status-cell"><div class="cell-text">二周目投入正確信物</div></div>
+    <div class="status-cell"><div class="cell-tag ct-c">置換完成</div></div>
+    <div class="status-cell"><div class="cell-text">完整救贖演出，神聖屬性 +25%</div></div>
+  </div>
+
+  <!-- 拾壹：鎖定清單 -->
+  <div class="chapter">
+    <div class="chapter-num">Chapter 11</div>
+    <div class="chapter-title">已鎖定設計項目
+      <span class="sub">Confirmed & Locked</span>
+    </div>
+  </div>
+
+  <div class="checklist">
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>金幣無限，1 元可 Swap</strong>——一周目爽感來源，系統對廉價置換顯示「成功」</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>所有道具唯一，無廢物</strong>——每件皆有戰鬥功能，信物同時具備雙重意義</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>Swap 欄戰前配置，一次限一件</strong>——選擇本身就有重量，不可在戰鬥中途更換</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>一周目信物被隊友強行阻斷</strong>——演出殘缺，顯示「中斷」而非「失敗」，玩家誤以為選錯</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>二周目怪死後靈體說執念，說完消失</strong>——台詞說感受不說答案，玩家自行推理</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>玩家回大地圖重新準備後再進房</strong>——第一輪收集情報，第二輪才真正置換</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>選錯有具體台詞回應</strong>——每次失敗都是額外情報，不讓玩家無限瞎猜</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>允許讀檔重來，不限次數</strong>——放不下、不斷重來，本身就是執念的體驗</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>線索雙層設計</strong>——戰前環境 + 戰中台詞，兩者組合才完整，缺一不能確定答案</div>
+    </div>
+    <div class="check-item">
+      <div class="check-icon">✓</div>
+      <div class="check-text"><strong>信物來源混合</strong>——部分商店（平淡描述）、部分地圖探索、部分條件掉落，沒有固定規律</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 尾頁 -->
+<div class="ending">
+  <div class="ending-quote">
+    一周目。玩家靠奪取變強。<br><br>
+    二周目。玩家開始學會歸還。<br><br>
+    《頭七》真正的最終成長，不是獲得更多力量。<br><br>
+    而是<em>願意把偷來的一切，一件件還回去</em>。
+  </div>
+  <div class="ending-mark">Swap System v2.0 · Final · 《頭七》Game Design Document</div>
+</div>
+
+</body>
+</html>
